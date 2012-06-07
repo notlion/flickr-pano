@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
+<link href="css/style.css" media="all" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="lib/embr/src/embr.js"></script>
+<script type="text/javascript" src="lib/gl-matrix.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="src/animtools.js"></script>
+<script type="text/javascript" src="src/embrtools.js"></script>
+<script type="text/javascript" src="src/main.js"></script>
+<script id="prog-vs" type="x-shader/x-vertex">
+
+attribute vec4 position;
+attribute vec2 texcoord;
+
+varying vec2 v_texcoord;
+
+void main() {
+  v_texcoord = texcoord;
+  gl_Position = position;
+}
+
+</script>
+<script id="prog-fs" type="x-shader/x-fragment">
+
+precision mediump float;
+
+uniform mat3 u_transform;
+uniform sampler2D u_bg_texture, u_texture;
+uniform float u_scale, u_aspect;
+
+varying vec2 v_texcoord;
+
+#define PI 3.141592653589793
+
+void main(){
+  vec2 rads = vec2(PI * 2., PI);
+
+  vec2 pnt = v_texcoord * vec2(u_scale * u_aspect, u_scale);
+
+  // Project to Sphere
+  float x2y2 = pnt.x * pnt.x + pnt.y * pnt.y;
+  vec3 sphere_pnt = vec3(2. * pnt, x2y2 - 1.) / (x2y2 + 1.);
+  sphere_pnt *= u_transform;
+
+  // Convert to Spherical Coordinates
+  vec2 latlon = vec2(
+    atan(sphere_pnt.y, sphere_pnt.x) + PI,
+    acos(sphere_pnt.z / length(sphere_pnt))
+  );
+
+  gl_FragColor.rgb = texture2D(u_bg_texture, latlon / rads).rgb;
+  gl_FragColor.a = 1.;
+}
+
+</script>
+</head>
+<body>
+<canvas id="gl-canvas" class="grabbable"></canvas>
+</body>
+</html>

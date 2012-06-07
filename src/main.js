@@ -3,7 +3,7 @@
   function Viewport () {
     var canvas, gl, plane, shader, bg_texture
       , transform = mat4.identity()
-      , dd;
+      , dd, arcball;
 
     mat4.rotateX(transform, Math.PI / 2);
 
@@ -44,6 +44,7 @@
       initGfx();
 
       dd = new animtools.DirtyDraw().setDrawFn(this.draw);
+      arcball = new animtools.Arcball(canvas, dd);
 
       this.layout();
     };
@@ -79,7 +80,7 @@
       gl.viewport(0, 0, canvas.width, canvas.height);
       bg_texture.bind(0);
       shader.use({
-        u_transform: mat4.toMat3(transform),
+        u_transform: arcball.getRotationMat3(),
         u_bg_texture: bg_texture.params.unit,
         u_scale: 1,
         u_aspect: canvas.width / canvas.height
