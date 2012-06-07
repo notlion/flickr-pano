@@ -2,8 +2,7 @@
 
   var embrtools = context.embrtools = {};
 
-  embrtools.createImageTexture = function (url, onload) {
-    var texture = new Embr.Texture();
+  embrtools.loadImageTexture = function (texture, url, onload) {
     var img = new Image();
     img.crossOrigin = "anonymous"; // Appease the x-domain gods
 
@@ -17,8 +16,6 @@
     };
 
     img.src = url;
-
-    return texture;
   };
 
 })(this);

@@ -27,7 +27,7 @@ void main() {
 precision mediump float;
 
 uniform mat3 u_transform;
-uniform sampler2D u_bg_texture, u_texture;
+uniform sampler2D u_bg_texture, u_hq_texture;
 uniform float u_scale, u_aspect;
 
 varying vec2 v_texcoord;
@@ -50,7 +50,9 @@ void main(){
     acos(sphere_pnt.z / length(sphere_pnt))
   );
 
-  gl_FragColor.rgb = texture2D(u_bg_texture, latlon / rads).rgb;
+  vec2 tc = latlon / rads;
+  gl_FragColor.rgb = texture2D(u_bg_texture, tc).rgb;
+  gl_FragColor.rgb += texture2D(u_hq_texture, tc).rgb;
   gl_FragColor.a = 1.;
 }
 
