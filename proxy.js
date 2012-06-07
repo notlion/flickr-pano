@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 // Flickr supports cross-domain image loading, but only from Flash.
 // For WebGL we need to proxy all image loads and give them a more liberal
 // CORS policy. Hopefully this will change soon!
@@ -8,13 +10,13 @@ var url = require("url");
 var server = http.createServer(function (req, res) {
   var query = url.parse(req.url, true).query;
 
-  function replyNotFound () {
+  function respondNone () {
     res.writeHead(404);
     res.end("none");
   }
 
   if(query && query.img) {
-    // Grab Image from Flickr
+    // Grab Image from Flickr ..
     var img_url = url.parse(query.img);
     http.get({
       host: img_url.host,
@@ -26,21 +28,21 @@ var server = http.createServer(function (req, res) {
         flickr_res.headers["access-control-allow-origin"] = "*";
         res.writeHead(200, flickr_res.headers);
         flickr_res.on("data", function (chunk) {
-          res.write(chunk, "binary"); // .. and Write to Client
+          res.write(chunk, "binary"); // .. and write to client.
         });
         flickr_res.on("end", function () {
           res.end();
         });
       }
       else {
-        replyNotFound();
+        respondNone();
       }
     }).on("error", function (err) {
-      replyNotFound();
+      respondNone();
     });
   }
   else {
-    replyNotFound();
+    respondNone();
   }
 });
 
