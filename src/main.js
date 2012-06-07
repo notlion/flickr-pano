@@ -1,5 +1,7 @@
 (function () {
 
+  "use strict";
+
   function Viewport () {
     var canvas, gl, plane, shader, bg_texture, pano_texture
       , transform = mat4.identity()

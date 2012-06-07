@@ -1,5 +1,7 @@
 (function (context) {
 
+  "use strict";
+
   var embrtools = context.embrtools = {};
 
   embrtools.loadImageTexture = function (texture, url, onload) {
