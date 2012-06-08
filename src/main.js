@@ -3,7 +3,7 @@
   "use strict";
 
   function Viewport () {
-    var canvas, gl, plane, shader, bg_texture, pano_texture
+    var canvas, gl, plane, shader, bg_texture, hq_texture
       , transform = mat4.identity()
       , dd, arcball;
 
@@ -70,7 +70,6 @@
       }).done(function (res) {
         console.log(res);
         var url = "http://localhost:1337/?img=" + res.sizes.size[10].source;
-        // var url = res.sizes.size[10].source;
         embrtools.loadImageTexture(hq_texture, url, onTextureLoaded);
       });
     };
