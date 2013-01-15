@@ -52,6 +52,10 @@
 
   // Arcball Camera
 
+  function clamp (v, min, max) {
+    return v < min ? min : (v > max ? max : v);
+  }
+
   function vec3LengthSq (vec) {
     var x = vec[0], y = vec[1], z = vec[2];
     return x * x + y * y + z * z;
@@ -70,8 +74,10 @@
   animtools.Arcball = function (canvas, dd) {
     var rotation = quat4.create([ 0, 0, 0, 1 ])
       , initial_rotation = quat4.create()
+      , scale = 1, scale_min = 0.1, scale_max = 10
       , mouse_down_x, mouse_down_y
-      , invert_x = true, invert_y = false;
+      , invert_x = true, invert_y = false
+      , arcball = this;
 
     function getCanvasToSpherePnt (x, y) {
       var sx = canvas.clientWidth / 2
@@ -125,8 +131,25 @@
       document.addEventListener("mouseup", onMouseUp, true);
     }
 
+    function onMouseWheel (e) {
+      e.preventDefault();
+      // Gecko scroll events expose wheelDelta as detail
+      var delta = e.detail * -2 || e.wheelDelta;
+      arcball.setScale(scale - delta * 0.001);
+    }
+
+    this.setScale = function (s) {
+      scale = clamp(s, scale_min, scale_max);
+      dd.setDirty();
+    };
+
+    this.getScale = function () {
+      return scale;
+    };
+
     this.setRotation = function (q) {
       quat4.set(q, rotation);
+      dd.setDirty();
     };
 
     this.getRotationMat3 = function () {
@@ -134,6 +157,10 @@
     };
 
     canvas.addEventListener("mousedown", onMouseDown);
+    canvas.addEventListener("mousewheel", onMouseWheel);
+
+    // Gecko has it's own mouse wheel event
+    canvas.addEventListener("MozMousePixelScroll", onMouseWheel);
   };
 
 })(this);

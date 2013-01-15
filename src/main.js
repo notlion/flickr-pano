@@ -17,27 +17,28 @@
       catch(err) {}
 
       if(gl)
-        Embr.setContext(gl);
+        embr.setContext(gl);
       else
         console.error("Could not create a GL context. Boo.");
     }
 
     function initGfx () {
-      var vsrc = document.getElementById("prog-vs").textContent;
-      var fsrc = document.getElementById("prog-fs").textContent;
-      shader = new Embr.Program(vsrc, fsrc).link();
+      shader = new embr.Program({
+        vertex: document.getElementById("prog-vs").textContent,
+        fragment: document.getElementById("prog-fs").textContent
+      }).link();
 
       var positions = [ -1, -1, 0, 1, -1, 1, 0, 1, 1, -1, 0, 1, 1, 1, 0, 1 ];
       var texcoords = [ -1, -1, -1, 1, 1, -1, 1, 1, ];
-      plane = new Embr.Vbo(gl.TRIANGLE_STRIP)
+      plane = new embr.Vbo(gl.TRIANGLE_STRIP)
         .setAttr("position", { data: positions, size: 4 })
         .setAttr("texcoord", { data: texcoords, size: 2 })
-        .setProg(shader);
+        .setProgram(shader);
 
-      bg_texture = new Embr.Texture();
+      bg_texture = new embr.Texture();
       embrtools.loadImageTexture(bg_texture, "img/grid.png", onTextureLoaded);
 
-      hq_texture = new Embr.Texture();
+      hq_texture = new embr.Texture();
     }
 
     function onTextureLoaded () {
@@ -91,8 +92,8 @@
       hq_texture.bind(1);
       shader.use({
         u_transform: arcball.getRotationMat3(),
-        u_bg_texture: bg_texture.params.unit,
-        u_hq_texture: hq_texture.params.unit,
+        u_bg_texture: bg_texture.settings.unit,
+        u_hq_texture: hq_texture.settings.unit,
         u_scale: 1,
         u_aspect: canvas.width / canvas.height
       })
