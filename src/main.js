@@ -28,17 +28,19 @@
         fragment: document.getElementById("prog-fs").textContent
       }).link();
 
-      var positions = [ -1, -1, 0, 1, -1, 1, 0, 1, 1, -1, 0, 1, 1, 1, 0, 1 ];
-      var texcoords = [ -1, -1, -1, 1, 1, -1, 1, 1, ];
+      var positions = new Int8Array([
+        -1, -1, 0, 1, -1, 1, 0, 1, 1, -1, 0, 1, 1, 1, 0, 1
+      ]);
+      var texcoords = new Int8Array([ -1, -1, -1, 1, 1, -1, 1, 1, ]);
       plane = new embr.Vbo(gl.TRIANGLE_STRIP)
-        .setAttr("position", { data: positions, size: 4 })
-        .setAttr("texcoord", { data: texcoords, size: 2 })
+        .createAttr("position", { data: positions, size: 4, type: gl.BYTE })
+        .createAttr("texcoord", { data: texcoords, size: 2, type: gl.BYTE })
         .setProgram(shader);
 
       bg_texture = new embr.Texture();
       embrtools.loadImageTexture(bg_texture, "img/grid.png", onTextureLoaded);
 
-      hq_texture = new embr.Texture();
+      hq_texture = new embr.Texture({ filter: gl.LINEAR });
     }
 
     function onTextureLoaded () {
@@ -69,7 +71,6 @@
           "photo_id": id
         }
       }).done(function (res) {
-        console.log(res);
         var url = "http://localhost:1337/?img=" + res.sizes.size[10].source;
         embrtools.loadImageTexture(hq_texture, url, onTextureLoaded);
       });
@@ -81,8 +82,9 @@
     };
 
     this.layout = function () {
-      canvas.width = canvas.clientWidth;
-      canvas.height = canvas.clientHeight;
+      var scale = window.devicePixelRatio || 1;
+      canvas.width = canvas.clientWidth * scale;
+      canvas.height = canvas.clientHeight * scale;
       dd.setDirty();
     };
 
@@ -103,7 +105,7 @@
 
   var view;
 
-  window.addEventListener("load", function () {
+  window.addEventListener("DOMContentLoaded", function () {
     view = new Viewport();
     view.init(document.getElementById("gl-canvas"));
     view.loadPhoto("7299382820");

@@ -38,6 +38,7 @@ var server = http.createServer(function (req, res) {
         respondNone();
       }
     }).on("error", function (err) {
+      console.error(err)
       respondNone();
     });
   }
